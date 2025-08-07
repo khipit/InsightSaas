@@ -1,11 +1,8 @@
 'use client';
+
 import dynamic from 'next/dynamic';
-const CustomRequestPage = dynamic(() => import('./CustomRequestPage'), {
-    ssr: false,
-});
+
+// 동적으로 불러올 페이지 컴포넌트를 지정
+const CustomRequestPage = dynamic(() => import('./CustomRequestPage'));
+
 export default CustomRequestPage;
-import dynamic from 'next/dynamic';  // ← 중복!
-const CustomRequestPage = dynamic(() => import('./CustomRequestPage'), {  // ← 중복!
-  ssr: false,
-});
-export default CustomRequestPage;  // ← 중복!
