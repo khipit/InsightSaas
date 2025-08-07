@@ -1,8 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-// 동적으로 불러올 페이지 컴포넌트를 지정
-const CustomRequestPage = dynamic(() => import('./CustomRequestPage'));
-
-export default CustomRequestPage;
+export default function CustomRequestPage() {
+  return (
+    <div>
+      <h1>Custom Request (No dynamic)</h1>
+      <p>This is directly written in page.tsx</p>
+    </div>
+  );
+}
