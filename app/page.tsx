@@ -34,7 +34,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-4" asChild>
-              <Link href="/start-trial">
+              <Link href="/dashboard">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
@@ -90,7 +90,7 @@ export default function HomePage() {
               className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-emerald-50 to-emerald-100 cursor-pointer"
               asChild
             >
-              <Link href="/sample-snapshot">
+              <Link href="/reports/snapshot/naver">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <Sparkles className="h-5 w-5 text-emerald-600" />
@@ -117,7 +117,7 @@ export default function HomePage() {
               className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-emerald-100 to-emerald-200 cursor-pointer"
               asChild
             >
-              <Link href="/sample-report">
+              <Link href="/reports/snapshot/samsung-electronics">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-700/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <Sparkles className="h-5 w-5 text-emerald-700" />
@@ -144,7 +144,7 @@ export default function HomePage() {
               className="group relative overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-emerald-200 to-emerald-300 cursor-pointer"
               asChild
             >
-              <Link href="/sample-custom">
+              <Link href="/reports/snapshot/lg-energy">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <Sparkles className="h-5 w-5 text-emerald-800" />
@@ -232,7 +232,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-br from-emerald-50 to-emerald-100 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-emerald-900 mb-4">Why Leading Analysts Choose KHIP</h2>
+            <h2 className="text-3xl font-bold text-emerald-900 mb-4">Why Leading Analysts Choose ComCheck</h2>
             <p className="text-xl text-emerald-700">
               Unmatched depth, speed, and accuracy in Korean corporate intelligence
             </p>
@@ -331,7 +331,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full" variant="outline" asChild>
-                  <Link href="/start-trial">Start Free Trial</Link>
+                  <Link href="/dashboard">Start Free Trial</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -369,7 +369,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full bg-emerald-600 hover:bg-emerald-700" asChild>
-                  <Link href="/order/snapshot-plan">Subscribe Now</Link>
+                  <Link href="/dashboard">Subscribe Now</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -404,7 +404,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full bg-emerald-600 hover:bg-emerald-700" asChild>
-                  <Link href="/order/single-report">Order Report</Link>
+                  <Link href="/dashboard">Order Report</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -439,7 +439,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full bg-emerald-600 hover:bg-emerald-700" asChild>
-                  <Link href="/custom-request">Request Quote</Link>
+                  <Link href="/dashboard">Request Quote</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -452,11 +452,11 @@ export default function HomePage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
-            Join hundreds of investors and analysts who trust KHIP for Korean corporate intelligence
+            Join hundreds of investors and analysts who trust ComCheck for Korean corporate intelligence
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-100" asChild>
-              <Link href="/start-trial">Start Free Trial</Link>
+              <Link href="/dashboard">Start Free Trial</Link>
             </Button>
             <Button size="lg" className="bg-white text-emerald-600 hover:bg-gray-100" asChild>
               <Link href="#samples">View Samples</Link>
@@ -471,8 +471,8 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Important Disclaimer</h3>
             <p className="text-sm text-gray-600 leading-relaxed">
-              The information provided by KHIP is for informational purposes only and should not be considered as
-              investment advice, financial advice, trading advice, or any other sort of advice. KHIP does not recommend
+              The information provided by ComCheck is for informational purposes only and should not be considered as
+              investment advice, financial advice, trading advice, or any other sort of advice. ComCheck does not recommend
               that any security should be bought, sold, or held by you. Do conduct your own due diligence and consult
               your financial advisor before making any investment decisions. Past performance is not indicative of
               future results. All data is sourced from official Korean disclosure systems and public sources, but
