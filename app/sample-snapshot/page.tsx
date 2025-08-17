@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, FileText, Calendar, AlertTriangle } from "lucide-react"
 import Link from "next/link"
+import { NewsIntegration } from "@/components/news-integration"
 
 export default function SampleSnapshotPage() {
   return (
@@ -283,6 +284,12 @@ export default function SampleSnapshotPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* News Integration Demo */}
+            <NewsIntegration 
+              companyId="naver-corp" 
+              companyName="NAVER Corporation" 
+            />
 
             {/* CTA Card */}
             <Card className="border-blue-200 bg-blue-50">
