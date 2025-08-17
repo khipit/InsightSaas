@@ -5,7 +5,8 @@ class ApiClient {
   private baseURL: string
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000'
+    // Use backend API URL with /api prefix
+    this.baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api'
     this.client = axios.create({
       baseURL: this.baseURL,
       timeout: 10000,
@@ -28,9 +29,24 @@ class ApiClient {
       }
     )
 
-    // Response interceptor to handle common errors
+    // Response interceptor to handle Django REST API responses and errors
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        // Handle Django REST API response format
+        if (response.data && response.data.success !== undefined) {
+          if (response.data.success) {
+            // Return the data portion of successful responses
+            return { ...response, data: response.data.data || response.data }
+          } else {
+            // Handle API-level errors
+            const error = new Error(response.data.error?.message || 'API request failed')
+            ;(error as any).code = response.data.error?.code
+            ;(error as any).details = response.data.error?.details
+            throw error
+          }
+        }
+        return response
+      },
       (error) => {
         if (error.response?.status === 401) {
           // Handle unauthorized access - clear token and redirect to login
