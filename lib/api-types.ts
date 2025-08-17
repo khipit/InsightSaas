@@ -77,6 +77,59 @@ export interface CompanySearchResponse {
   total: number
 }
 
+// Category interfaces
+export interface Category {
+  id: string
+  name: string
+  description?: string
+  color?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
+  color?: string
+}
+
+export interface UpdateCategoryRequest {
+  name?: string
+  description?: string
+  color?: string
+}
+
+export interface CategoryResponse {
+  categories: Category[]
+  total: number
+  hasNextPage?: boolean
+}
+
+// Tag interfaces
+export interface Tag {
+  id: string
+  name: string
+  color?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTagRequest {
+  name: string
+  color?: string
+}
+
+export interface UpdateTagRequest {
+  name?: string
+  color?: string
+}
+
+export interface TagResponse {
+  tags: Tag[]
+  total: number
+  hasNextPage?: boolean
+}
+
 // News interfaces
 export interface NewsArticle {
   id: string
@@ -87,6 +140,10 @@ export interface NewsArticle {
   source: string
   companyId?: string
   sentiment: 'positive' | 'negative' | 'neutral'
+  categoryId?: string
+  category?: Category
+  tags?: Tag[]
+  tagIds?: string[]
 }
 
 export interface NewsResponse {
@@ -98,10 +155,35 @@ export interface NewsResponse {
 export interface NewsSearchRequest {
   query?: string
   companyId?: string
+  categoryId?: string
+  tagIds?: string[]
   startDate?: string
   endDate?: string
   limit?: number
   offset?: number
+}
+
+// News article creation and update interfaces
+export interface CreateNewsArticleRequest {
+  title: string
+  summary: string
+  url: string
+  source: string
+  companyId?: string
+  sentiment: 'positive' | 'negative' | 'neutral'
+  categoryId?: string
+  tagIds?: string[]
+}
+
+export interface UpdateNewsArticleRequest {
+  title?: string
+  summary?: string
+  url?: string
+  source?: string
+  companyId?: string
+  sentiment?: 'positive' | 'negative' | 'neutral'
+  categoryId?: string
+  tagIds?: string[]
 }
 
 // Report interfaces

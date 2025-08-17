@@ -436,3 +436,305 @@ Logging: Implement comprehensive logging for debugging and monitoring.
 Data Validation: Validate all incoming request data.
 
 CORS: Configure CORS to allow requests from the frontend domain.
+
+## Category Management Endpoints
+
+GET /categories
+Get all categories.
+
+Query Parameters:
+- limit: Number of results to return (default: 50)
+- offset: Pagination offset (default: 0)
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "categories": [
+      {
+        "id": "category_123",
+        "name": "경제",
+        "description": "경제 관련 뉴스",
+        "color": "#3B82F6",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "total": 1,
+    "hasNextPage": false
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+GET /categories/{id}
+Get a specific category by ID.
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "category_123",
+    "name": "경제",
+    "description": "경제 관련 뉴스",
+    "color": "#3B82F6",
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-01T00:00:00Z"
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+POST /categories
+Create a new category.
+
+Headers: Authorization: Bearer {token}
+
+Request:
+```json
+{
+  "name": "기술",
+  "description": "기술 및 IT 뉴스",
+  "color": "#10B981"
+}
+```
+
+Response: Same as GET /categories/{id}
+
+PUT /categories/{id}
+Update an existing category.
+
+Headers: Authorization: Bearer {token}
+
+Request:
+```json
+{
+  "name": "기술 업데이트",
+  "description": "기술 및 IT 관련 뉴스",
+  "color": "#059669"
+}
+```
+
+Response: Same as GET /categories/{id}
+
+DELETE /categories/{id}
+Delete a category.
+
+Headers: Authorization: Bearer {token}
+
+Response:
+```json
+{
+  "success": true,
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+## Tag Management Endpoints
+
+GET /tags
+Get all tags.
+
+Query Parameters:
+- limit: Number of results to return (default: 50)
+- offset: Pagination offset (default: 0)
+
+Response:
+```json
+{
+  "success": true,
+  "data": {
+    "tags": [
+      {
+        "id": "tag_123",
+        "name": "긴급",
+        "color": "#EF4444",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "total": 1,
+    "hasNextPage": false
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+GET /tags/{id}
+Get a specific tag by ID.
+
+Response: Same structure as categories
+
+GET /tags/search
+Search tags by name.
+
+Query Parameters:
+- query: Search query string
+- limit: Number of results to return (default: 20)
+
+Response: Same as GET /tags
+
+POST /tags
+Create a new tag.
+
+Headers: Authorization: Bearer {token}
+
+Request:
+```json
+{
+  "name": "속보",
+  "color": "#F59E0B"
+}
+```
+
+Response: Same as GET /tags/{id}
+
+PUT /tags/{id}
+Update an existing tag.
+
+Headers: Authorization: Bearer {token}
+
+Request:
+```json
+{
+  "name": "속보 업데이트",
+  "color": "#D97706"
+}
+```
+
+Response: Same as GET /tags/{id}
+
+DELETE /tags/{id}
+Delete a tag.
+
+Headers: Authorization: Bearer {token}
+
+Response:
+```json
+{
+  "success": true,
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+## Enhanced News Endpoints
+
+The following endpoints have been enhanced to support categories and tags:
+
+GET /news/search
+Enhanced search with category and tag filtering.
+
+Query Parameters:
+- query: Search query string
+- companyId: Filter by company ID
+- categoryId: Filter by category ID
+- tagIds: Filter by tag IDs (can be multiple: tagIds=tag1&tagIds=tag2)
+- startDate: Filter by start date (ISO format)
+- endDate: Filter by end date (ISO format)
+- limit: Number of results to return
+- offset: Pagination offset
+
+Response: Enhanced news articles with category and tag information
+```json
+{
+  "success": true,
+  "data": {
+    "articles": [
+      {
+        "id": "news_123",
+        "title": "Korean Tech Giants Report Strong Q4 Earnings",
+        "summary": "Major Korean technology companies show robust growth...",
+        "url": "https://example.com/news/123",
+        "publishedAt": "2024-01-01T00:00:00Z",
+        "source": "Korea Economic Daily",
+        "companyId": "company_456",
+        "sentiment": "positive",
+        "categoryId": "category_123",
+        "category": {
+          "id": "category_123",
+          "name": "경제",
+          "description": "경제 관련 뉴스",
+          "color": "#3B82F6"
+        },
+        "tagIds": ["tag_123", "tag_456"],
+        "tags": [
+          {
+            "id": "tag_123",
+            "name": "긴급",
+            "color": "#EF4444"
+          }
+        ]
+      }
+    ],
+    "total": 1,
+    "hasNextPage": false
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+GET /news/category/{categoryId}
+Get news articles by category.
+
+Query Parameters:
+- limit: Number of results to return (default: 20)
+
+Response: Same structure as enhanced news search
+
+GET /news/tag/{tagId}
+Get news articles by tag.
+
+Query Parameters:
+- limit: Number of results to return (default: 20)
+
+Response: Same structure as enhanced news search
+
+POST /news
+Create a new news article.
+
+Headers: Authorization: Bearer {token}
+
+Request:
+```json
+{
+  "title": "새로운 뉴스 기사",
+  "summary": "뉴스 기사 요약",
+  "url": "https://example.com/news",
+  "source": "뉴스 소스",
+  "companyId": "company_123",
+  "sentiment": "positive",
+  "categoryId": "category_123",
+  "tagIds": ["tag_123", "tag_456"]
+}
+```
+
+Response: Created news article with full category and tag information
+
+PUT /news/{id}
+Update an existing news article.
+
+Headers: Authorization: Bearer {token}
+
+Request: Same as POST /news (all fields optional)
+
+Response: Updated news article with full category and tag information
+
+DELETE /news/{id}
+Delete a news article.
+
+Headers: Authorization: Bearer {token}
+
+Response:
+```json
+{
+  "success": true,
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+GET /news/{id}
+Get a specific news article by ID.
+
+Response: Single news article with full category and tag information
