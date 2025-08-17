@@ -1,28 +1,25 @@
 # Backend API Documentation
-
-This document outlines the expected API structure for the InsightSaaS backend server that should run on `http://localhost:4000`.
+This document outlines the expected API structure for the InsightSaaS backend server that should run on http://localhost:4000.
 
 ## Base Configuration
 
 - **Base URL**: `http://localhost:4000`
 - **Authentication**: JWT Bearer tokens
 - **Content-Type**: `application/json`
-
-## Authentication Endpoints
-
-### POST /auth/login
+Authentication Endpoints
+POST /auth/login
 Login with email and password.
 
-**Request:**
-```json
+Request:
+
+JSON
 {
   "email": "user@example.com",
   "password": "password123"
 }
-```
+Response:
 
-**Response:**
-```json
+JSON
 {
   "success": true,
   "data": {
@@ -38,40 +35,37 @@ Login with email and password.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### POST /auth/google
+POST /auth/google
 Google OAuth authentication.
 
-**Request:**
-```json
+Request:
+
+JSON
 {
   "token": "google_oauth_token"
 }
-```
+Response: Same as /auth/login
 
-**Response:** Same as /auth/login
-
-### POST /auth/logout
+POST /auth/logout
 Logout and invalidate token.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /auth/me
+GET /auth/me
 Get current user information.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -83,24 +77,22 @@ Get current user information.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### POST /auth/refresh
+POST /auth/refresh
 Refresh authentication token.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:** Same as /auth/login
+Response: Same as /auth/login
 
-## Purchase Management Endpoints
-
-### GET /purchases
+Purchase Management Endpoints
+GET /purchases
 Get all purchases (admin only).
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -125,32 +117,30 @@ Get all purchases (admin only).
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}
+GET /purchases/user/{userId}
 Get purchases for a specific user.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:** Same structure as GET /purchases
+Response: Same structure as GET /purchases
 
-### POST /purchases
+POST /purchases
 Create a new purchase.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Request:**
-```json
+Request:
+
+JSON
 {
   "type": "single-report",
   "companyId": "company_456",
   "companyName": "Samsung Electronics",
   "amount": 49.99
 }
-```
+Response:
 
-**Response:**
-```json
+JSON
 {
   "success": true,
   "data": {
@@ -165,30 +155,28 @@ Create a new purchase.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### PATCH /purchases/{purchaseId}/status
+PATCH /purchases/{purchaseId}/status
 Update purchase status.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Request:**
-```json
+Request:
+
+JSON
 {
   "status": "delivered",
   "reportUrl": "https://example.com/report.pdf"
 }
-```
+Response: Purchase object with updated status
 
-**Response:** Purchase object with updated status
-
-### GET /purchases/user/{userId}/access/company/{companyId}
+GET /purchases/user/{userId}/access/company/{companyId}
 Check if user has access to a specific company.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -196,15 +184,14 @@ Check if user has access to a specific company.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}/snapshot-plan
+GET /purchases/user/{userId}/snapshot-plan
 Check if user has snapshot plan.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -212,15 +199,14 @@ Check if user has snapshot plan.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}/active-trial
+GET /purchases/user/{userId}/active-trial
 Check if user has active trial.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -228,15 +214,14 @@ Check if user has active trial.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}/used-trial
+GET /purchases/user/{userId}/used-trial
 Check if user has used trial.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -244,15 +229,14 @@ Check if user has used trial.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}/custom-report
+GET /purchases/user/{userId}/custom-report
 Check if user has custom report access.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -260,22 +244,21 @@ Check if user has custom report access.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases?status=pending,under_review
+GET /purchases?status=pending,under_review
 Get pending purchases.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:** Same structure as GET /purchases
+Response: Same structure as GET /purchases
 
-### GET /purchases/user/{userId}/subscription-end-date
+GET /purchases/user/{userId}/subscription-end-date
 Get subscription end date.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -283,15 +266,14 @@ Get subscription end date.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /purchases/user/{userId}/trial-end-date
+GET /purchases/user/{userId}/trial-end-date
 Get trial end date.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -299,15 +281,13 @@ Get trial end date.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-## News Crawler Endpoints
-
-### GET /news/latest?limit=10
+News Crawler Endpoints
+GET /news/latest?limit=10
 Get latest news articles.
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -328,55 +308,53 @@ Get latest news articles.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /news/search?query=samsung&companyId=company_456&limit=10
+GET /news/search?query=samsung&companyId=company_456&limit=10
 Search news articles.
 
-**Query Parameters:**
-- `query`: Search query string
-- `companyId`: Filter by company ID
-- `startDate`: Filter by start date (ISO format)
-- `endDate`: Filter by end date (ISO format)
-- `limit`: Number of results to return
-- `offset`: Pagination offset
+Query Parameters:
 
-**Response:** Same structure as /news/latest
+query: Search query string
+companyId: Filter by company ID
+startDate: Filter by start date (ISO format)
+endDate: Filter by end date (ISO format)
+limit: Number of results to return
+offset: Pagination offset
+Response: Same structure as /news/latest
 
-### GET /news/company/{companyId}?limit=20
+GET /news/company/{companyId}?limit=20
 Get news for a specific company.
 
-**Response:** Same structure as /news/latest
+Response: Same structure as /news/latest
 
-### GET /news/trending?limit=10
+GET /news/trending?limit=10
 Get trending news articles.
 
-**Response:** Same structure as /news/latest
+Response: Same structure as /news/latest
 
-### GET /news/sentiment?sentiment=positive&companyId=company_456&limit=10
+GET /news/sentiment?sentiment=positive&companyId=company_456&limit=10
 Get news by sentiment.
 
-**Query Parameters:**
-- `sentiment`: positive, negative, or neutral
-- `companyId`: Optional company filter
-- `limit`: Number of results
+Query Parameters:
 
-**Response:** Same structure as /news/latest
+sentiment: positive, negative, or neutral
+companyId: Optional company filter
+limit: Number of results
+Response: Same structure as /news/latest
 
-### POST /news/crawl
+POST /news/crawl
 Trigger news crawling for a company (admin/system function).
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Request:**
-```json
+Request:
+
+JSON
 {
   "companyId": "company_456"
 }
-```
+Response:
 
-**Response:**
-```json
+JSON
 {
   "success": true,
   "data": {
@@ -385,15 +363,14 @@ Trigger news crawling for a company (admin/system function).
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### GET /news/crawl/status/{jobId}
+GET /news/crawl/status/{jobId}
 Get crawl job status.
 
-**Headers:** `Authorization: Bearer {token}`
+Headers: Authorization: Bearer {token}
 
-**Response:**
-```json
+Response:
+
+JSON
 {
   "success": true,
   "data": {
@@ -403,13 +380,10 @@ Get crawl job status.
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-## Error Responses
-
+Error Responses
 All endpoints may return error responses in this format:
 
-```json
+JSON
 {
   "success": false,
   "error": {
@@ -419,20 +393,16 @@ All endpoints may return error responses in this format:
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-```
-
-### Common Error Codes:
-- `UNAUTHORIZED` (401): Invalid or missing token
-- `FORBIDDEN` (403): Insufficient permissions
-- `NOT_FOUND` (404): Resource not found
-- `VALIDATION_ERROR` (400): Invalid request data
-- `INTERNAL_ERROR` (500): Server error
-
-## Environment Variables
-
+Common Error Codes:
+UNAUTHORIZED (401): Invalid or missing token
+FORBIDDEN (403): Insufficient permissions
+NOT_FOUND (404): Resource not found
+VALIDATION_ERROR (400): Invalid request data
+INTERNAL_ERROR (500): Server error
+Environment Variables
 The backend should use these environment variables:
 
-```env
+env
 # Database
 DATABASE_URL=postgresql://username:password@localhost:5432/insightsaas
 
@@ -450,22 +420,19 @@ CRAWLER_USER_AGENT=InsightSaaS/1.0
 
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-```
+Implementation Notes
+Authentication: All protected endpoints require a valid JWT token in the Authorization header.
 
-## Implementation Notes
+Rate Limiting: Consider implementing rate limiting, especially for news crawler endpoints.
 
-1. **Authentication**: All protected endpoints require a valid JWT token in the Authorization header.
+Caching: News data should be cached to reduce external API calls.
 
-2. **Rate Limiting**: Consider implementing rate limiting, especially for news crawler endpoints.
+Database: Purchase and user data should be persisted in a database (PostgreSQL recommended).
 
-3. **Caching**: News data should be cached to reduce external API calls.
+Error Handling: All endpoints should return consistent error response format.
 
-4. **Database**: Purchase and user data should be persisted in a database (PostgreSQL recommended).
+Logging: Implement comprehensive logging for debugging and monitoring.
 
-5. **Error Handling**: All endpoints should return consistent error response format.
+Data Validation: Validate all incoming request data.
 
-6. **Logging**: Implement comprehensive logging for debugging and monitoring.
-
-7. **Data Validation**: Validate all incoming request data.
-
-8. **CORS**: Configure CORS to allow requests from the frontend domain.
+CORS: Configure CORS to allow requests from the frontend domain.
