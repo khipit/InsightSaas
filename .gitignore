@@ -69,6 +69,10 @@ web_modules/
 .env
 .env.*
 !.env.example
+!.env.local.example
+
+# IMPORTANT: Never commit actual API keys!
+# Use .env.local for local development with real keys
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
