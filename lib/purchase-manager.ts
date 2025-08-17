@@ -13,19 +13,6 @@ export interface Purchase {
   trialEndDate?: string // 트라이얼 만료일 추가
 }
 
-export interface PurchaseContextType {
-  purchases: Purchase[]
-  addPurchase: (purchase: Omit<Purchase, "id" | "purchaseDate">) => Purchase
-  updatePurchaseStatus: (purchaseId: string, status: Purchase["status"], reportUrl?: string) => void
-  getPurchasesByUser: (userId: string) => Purchase[]
-  hasAccessToCompany: (userId: string, companyId: string) => boolean
-  hasSnapshotPlan: (userId: string) => boolean
-  hasCustomReportAccess: (userId: string) => boolean
-  getPendingPurchases: () => Purchase[]
-  hasActiveTrial: (userId: string) => boolean
-  hasUsedTrial: (userId: string) => boolean
-}
-
 class PurchaseManager {
   private purchases: Purchase[] = []
 

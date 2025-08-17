@@ -3,14 +3,9 @@
 import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
-
-interface User {
-  id: string
-  email: string
-  name: string
-  avatar?: string
-  hasActiveSubscription?: boolean
-}
+import { authService } from "@/lib/auth-service"
+import { googleOAuthService } from "@/lib/google-oauth"
+import type { User } from "@/lib/api-types"
 
 interface AuthContextType {
   user: User | null
@@ -27,55 +22,116 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem("khip_user")
-    if (savedUser) {
+    const initializeAuth = async () => {
       try {
-        const parsedUser = JSON.parse(savedUser)
-        setUser(parsedUser)
+        // Check if user is authenticated (has token)
+        if (authService.isAuthenticated()) {
+          // Try to get current user from API
+          try {
+            const currentUser = await authService.getCurrentUser()
+            setUser(currentUser)
+            authService.storeUser(currentUser)
+          } catch (error) {
+            console.log('Failed to get current user from API, falling back to stored user')
+            // Fallback to stored user data
+            const storedUser = authService.getStoredUser()
+            if (storedUser) {
+              setUser(storedUser)
+            } else {
+              // Clear invalid token
+              await authService.logout()
+            }
+          }
+        } else {
+          // Check for existing session in localStorage (fallback mode)
+          const storedUser = authService.getStoredUser()
+          if (storedUser) {
+            setUser(storedUser)
+          }
+        }
       } catch (error) {
-        console.error("Error parsing saved user:", error)
-        localStorage.removeItem("khip_user")
+        console.error("Auth initialization error:", error)
+      } finally {
+        setLoading(false)
       }
     }
-    setLoading(false)
+
+    initializeAuth()
   }, [])
 
   const login = async (email: string, password: string) => {
-    // Simulate login - in real app, this would call your auth API
-    const mockUser = {
-      id: "1",
-      email,
-      name: email.split("@")[0],
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      hasActiveSubscription: true, // Mock active subscription
+    try {
+      // Try API login first
+      const response = await authService.login(email, password)
+      setUser(response.user)
+      authService.storeUser(response.user)
+    } catch (error) {
+      console.log('API login failed, falling back to mock login')
+      
+      // Fallback to mock login for development
+      const mockUser: User = {
+        id: "1",
+        email,
+        name: email.split("@")[0],
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        hasActiveSubscription: true,
+      }
+      setUser(mockUser)
+      authService.storeUser(mockUser)
     }
-    setUser(mockUser)
-    localStorage.setItem("khip_user", JSON.stringify(mockUser))
   }
 
   const loginWithGoogle = async () => {
-    // Simulate Google OAuth - in real app, this would use Google OAuth
-    const mockUser = {
-      id: "google_" + Date.now(),
-      email: "user@gmail.com",
-      name: "John Doe",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=google",
-      hasActiveSubscription: true, // Mock active subscription
+    try {
+      // Try Google OAuth flow
+      googleOAuthService.initializeOAuth()
+      
+      // For now, we'll simulate the Google OAuth flow
+      // In a real implementation, this would trigger the actual Google OAuth flow
+      console.log('Google OAuth URL:', googleOAuthService.getAuthUrl())
+      
+      // Mock Google user for development
+      const mockGoogleUser: User = {
+        id: "google_" + Date.now(),
+        email: "user@gmail.com",
+        name: "John Doe",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=google",
+        hasActiveSubscription: true,
+      }
+      
+      try {
+        // Try to authenticate with backend using mock Google token
+        const response = await authService.loginWithGoogle('mock_google_token')
+        setUser(response.user)
+        authService.storeUser(response.user)
+      } catch (error) {
+        console.log('Google API login failed, using mock user')
+        setUser(mockGoogleUser)
+        authService.storeUser(mockGoogleUser)
+      }
+    } catch (error) {
+      console.error('Google login error:', error)
+      throw error
     }
-    setUser(mockUser)
-    localStorage.setItem("khip_user", JSON.stringify(mockUser))
   }
 
-  const logout = () => {
-    setUser(null)
-    localStorage.removeItem("khip_user")
-    // Clear any other auth-related data
-    localStorage.removeItem("khip_session")
+  const logout = async () => {
+    try {
+      // Try API logout
+      await authService.logout()
+    } catch (error) {
+      console.log('API logout failed, clearing local storage')
+    } finally {
+      // Always clear local state
+      setUser(null)
+      // authService.logout() already clears localStorage
+    }
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, loading }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, loading }}>
+      {children}
+    </AuthContext.Provider>
   )
 }
 
