@@ -97,6 +97,13 @@ export default function LoginPage() {
                 placeholder="Enter your password"
               />
             </div>
+            
+            <div className="flex items-center justify-end">
+              <Link href="/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-500">
+                Forgot password?
+              </Link>
+            </div>
+            
             <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
               {loading ? "Signing in..." : "Sign in"}
             </Button>

@@ -9,8 +9,10 @@ import { usePurchases } from "@/components/purchase-provider"
 import { useRouter } from "next/navigation"
 import { Upload, Clock, CheckCircle, AlertTriangle, Edit } from "lucide-react"
 
+import { authService } from "@/lib/auth-service"
+
 export default function AdminPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, isAdmin } = useAuth()
   const { getPendingPurchases, updatePurchaseStatus, purchases } = usePurchases()
   const router = useRouter()
   const [pendingReports, setPendingReports] = useState<any[]>([])
@@ -20,6 +22,7 @@ export default function AdminPage() {
   const [debugInfo, setDebugInfo] = useState({
     userEmail: "",
     isAdmin: false,
+    userRole: "",
     loadingState: true,
   })
 
@@ -28,11 +31,13 @@ export default function AdminPage() {
     console.log("Loading:", loading)
     console.log("User:", user)
     console.log("User email:", user?.email)
-    console.log("Is admin?", user?.email === "admin@khip.com")
+    console.log("User role:", user?.role)
+    console.log("Is admin?", isAdmin)
 
     setDebugInfo({
       userEmail: user?.email || "No user",
-      isAdmin: user?.email === "admin@khip.com",
+      isAdmin: isAdmin,
+      userRole: user?.role || "No role",
       loadingState: loading,
     })
 
@@ -42,25 +47,34 @@ export default function AdminPage() {
       return
     }
 
-    if (!loading && user && user.email !== "admin@khip.com") {
-      console.log("User is not admin:", user.email)
+    if (!loading && user && !isAdmin) {
+      console.log("User is not admin:", user.email, user.role)
       return
     }
 
-    if (user && user.email === "admin@khip.com") {
+    if (user && isAdmin) {
       console.log("Admin user confirmed, loading pending purchases")
-      const pending = getPendingPurchases()
-      console.log("Pending purchases:", pending)
-      setPendingReports(pending)
+      const loadPendingPurchases = async () => {
+        try {
+          const pending = await getPendingPurchases()
+          console.log("Pending purchases:", pending)
+          setPendingReports(pending)
+        } catch (error) {
+          console.error("Failed to load pending purchases:", error)
+          setPendingReports([])
+        }
+      }
+      
+      loadPendingPurchases()
     }
-  }, [user, loading, router, getPendingPurchases, purchases])
+  }, [user, loading, isAdmin, router, getPendingPurchases, purchases])
 
   const handleGenerateReport = async (purchaseId: string) => {
     setUploadingId(purchaseId)
 
-    setTimeout(() => {
-      updatePurchaseStatus(purchaseId, "under_review")
-      const pending = getPendingPurchases()
+    setTimeout(async () => {
+      await updatePurchaseStatus(purchaseId, "under_review")
+      const pending = await getPendingPurchases()
       setPendingReports(pending)
       setUploadingId(null)
       alert("Report auto-generated! You can now edit and review it.")
@@ -74,10 +88,10 @@ export default function AdminPage() {
   const handleApproveReport = async (purchaseId: string) => {
     setUploadingId(purchaseId)
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const reportUrl = `/reports/${purchaseId}-full-report.pdf`
-      updatePurchaseStatus(purchaseId, "delivered", reportUrl)
-      const pending = getPendingPurchases()
+      await updatePurchaseStatus(purchaseId, "delivered", reportUrl)
+      const pending = await getPendingPurchases()
       setPendingReports(pending)
       setUploadingId(null)
       alert("Report approved and delivered!")
@@ -115,6 +129,9 @@ export default function AdminPage() {
         name: "Admin User",
         avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
         hasActiveSubscription: true,
+        role: "admin",
+        emailVerified: true,
+        createdAt: new Date().toISOString(),
       }),
     )
     window.location.reload()
@@ -132,7 +149,7 @@ export default function AdminPage() {
   }
 
   // 디버깅 정보 표시
-  if (!user || user.email !== "admin@khip.com") {
+  if (!user || !isAdmin) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="max-w-lg">
@@ -150,10 +167,13 @@ export default function AdminPage() {
                 <strong>User Email:</strong> {debugInfo.userEmail}
               </p>
               <p>
+                <strong>User Role:</strong> {debugInfo.userRole}
+              </p>
+              <p>
                 <strong>Is Admin:</strong> {debugInfo.isAdmin ? "Yes" : "No"}
               </p>
               <p>
-                <strong>Required Email:</strong> admin@khip.com
+                <strong>Required Role:</strong> admin
               </p>
             </div>
 
@@ -166,9 +186,9 @@ export default function AdminPage() {
               </div>
             )}
 
-            {user && user.email !== "admin@khip.com" && (
+            {user && !isAdmin && (
               <div>
-                <p className="text-red-600 mb-4">Current user ({user.email}) is not admin</p>
+                <p className="text-red-600 mb-4">Current user ({user.email}) does not have admin role</p>
                 <Button onClick={() => router.push("/")} className="w-full mb-2">
                   Go to Homepage
                 </Button>

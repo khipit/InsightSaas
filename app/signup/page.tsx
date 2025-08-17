@@ -17,7 +17,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
   const [loading, setLoading] = useState(false)
-  const { login, loginWithGoogle } = useAuth()
+  const { signup, loginWithGoogle } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get("redirect") || "/my-reports"
@@ -26,7 +26,7 @@ export default function SignUpPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      await login(email, password)
+      await signup(email, password, name)
       router.push(redirectTo)
     } catch (error) {
       console.error("Sign up failed:", error)

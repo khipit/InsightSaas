@@ -5,11 +5,40 @@ export interface User {
   name: string
   avatar?: string
   hasActiveSubscription?: boolean
+  role: 'admin' | 'user'
+  createdAt?: string
+  emailVerified?: boolean
 }
 
 export interface LoginRequest {
   email: string
   password: string
+}
+
+export interface SignupRequest {
+  email: string
+  password: string
+  name: string
+}
+
+export interface SignupResponse {
+  user: User
+  token: string
+  expiresIn: number
+}
+
+export interface PasswordResetRequest {
+  email: string
+}
+
+export interface PasswordResetConfirmRequest {
+  token: string
+  newPassword: string
+}
+
+export interface PasswordResetResponse {
+  success: boolean
+  message: string
 }
 
 export interface LoginResponse {

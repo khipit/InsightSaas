@@ -10,9 +10,11 @@ import type { User } from "@/lib/api-types"
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string, name: string) => Promise<void>
   loginWithGoogle: () => Promise<void>
   logout: () => void
   loading: boolean
+  isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -20,6 +22,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  // Compute isAdmin based on current user
+  const isAdmin = authService.isAdmin(user)
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -59,6 +64,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth()
   }, [])
 
+  const signup = async (email: string, password: string, name: string) => {
+    try {
+      // Try API signup first
+      const response = await authService.signup(email, password, name)
+      setUser(response.user)
+      authService.storeUser(response.user)
+    } catch (error) {
+      console.log('API signup failed, falling back to mock signup')
+      
+      // Fallback to mock signup for development
+      const mockUser: User = {
+        id: "user_" + Date.now(),
+        email,
+        name,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        hasActiveSubscription: false,
+        role: "user", // New users are regular users by default
+        emailVerified: false,
+        createdAt: new Date().toISOString(),
+      }
+      setUser(mockUser)
+      authService.storeUser(mockUser)
+    }
+  }
+
   const login = async (email: string, password: string) => {
     try {
       // Try API login first
@@ -75,6 +105,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: email.split("@")[0],
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
         hasActiveSubscription: true,
+        role: email === "admin@khip.com" ? "admin" : "user",
+        emailVerified: true,
+        createdAt: new Date().toISOString(),
       }
       setUser(mockUser)
       authService.storeUser(mockUser)
@@ -97,6 +130,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: "John Doe",
         avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=google",
         hasActiveSubscription: true,
+        role: "user",
+        emailVerified: true,
+        createdAt: new Date().toISOString(),
       }
       
       try {
@@ -129,7 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, loginWithGoogle, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, loginWithGoogle, logout, loading, isAdmin }}>
       {children}
     </AuthContext.Provider>
   )

@@ -6,20 +6,23 @@ This document outlines the expected API structure for the InsightSaaS backend se
 - **Base URL**: `http://localhost:4000`
 - **Authentication**: JWT Bearer tokens
 - **Content-Type**: `application/json`
-Authentication Endpoints
-POST /auth/login
-Login with email and password.
 
-Request:
+## Authentication Endpoints
 
-JSON
+### POST /auth/signup
+Register a new user with email and password.
+
+**Request:**
+```json
 {
   "email": "user@example.com",
-  "password": "password123"
+  "password": "password123",
+  "name": "John Doe"
 }
-Response:
+```
 
-JSON
+**Response:**
+```json
 {
   "success": true,
   "data": {
@@ -28,25 +31,107 @@ JSON
       "email": "user@example.com",
       "name": "John Doe",
       "avatar": "https://example.com/avatar.jpg",
-      "hasActiveSubscription": true
+      "hasActiveSubscription": false,
+      "role": "user",
+      "emailVerified": false,
+      "createdAt": "2024-01-01T00:00:00Z"
     },
     "token": "jwt_token_here",
     "expiresIn": 3600
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
-POST /auth/google
+```
+
+### POST /auth/login
+Login with email and password.
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "user_123",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "avatar": "https://example.com/avatar.jpg",
+      "hasActiveSubscription": true,
+      "role": "user",
+      "emailVerified": true,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    "token": "jwt_token_here",
+    "expiresIn": 3600
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+### POST /auth/forgot-password
+Request password reset email.
+
+**Request:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Password reset email sent successfully"
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+### POST /auth/reset-password
+Reset password using token from email.
+
+**Request:**
+```json
+{
+  "token": "reset_token_from_email",
+  "newPassword": "newpassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Password reset successfully"
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+### POST /auth/google
 Google OAuth authentication.
 
-Request:
-
-JSON
+**Request:**
+```json
 {
   "token": "google_oauth_token"
 }
-Response: Same as /auth/login
+```
 
-POST /auth/logout
+**Response:** Same as /auth/login
+
+### POST /auth/logout
 Logout and invalidate token.
 
 Headers: Authorization: Bearer {token}
@@ -420,19 +505,95 @@ CRAWLER_USER_AGENT=InsightSaaS/1.0
 
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
-Implementation Notes
-Authentication: All protected endpoints require a valid JWT token in the Authorization header.
 
-Rate Limiting: Consider implementing rate limiting, especially for news crawler endpoints.
+# Email Configuration (for password reset)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+EMAIL_FROM=no-reply@insightsaas.com
 
-Caching: News data should be cached to reduce external API calls.
+## Implementation Notes
 
-Database: Purchase and user data should be persisted in a database (PostgreSQL recommended).
+### Authentication & Authorization
+- All protected endpoints require a valid JWT token in the Authorization header
+- JWT tokens should include user role and permissions
+- Password reset tokens should expire within 1 hour
+- Email verification tokens should expire within 24 hours
 
-Error Handling: All endpoints should return consistent error response format.
+### Password Security
+- Passwords should be hashed using bcrypt with at least 12 rounds
+- Implement password strength requirements (minimum 6 characters)
+- Store password reset tokens securely with expiration
 
-Logging: Implement comprehensive logging for debugging and monitoring.
+### User Roles & Permissions
+- **Admin Role (`admin`)**: Full access to all endpoints, can manage users and purchases
+- **User Role (`user`)**: Limited access to user-specific data and operations
 
-Data Validation: Validate all incoming request data.
+#### Admin-only Endpoints:
+- `GET /purchases` - View all purchases
+- `POST /purchases/{id}/status` - Update purchase status
+- `POST /news/crawl` - Trigger news crawling
+- `GET /admin/*` - All admin dashboard endpoints
 
-CORS: Configure CORS to allow requests from the frontend domain.
+#### User Endpoints:
+- `GET /purchases/me` - View own purchases only
+- `GET /auth/me` - View own profile
+- `POST /purchases` - Create new purchase
+
+### Email Integration
+- Implement SMTP configuration for password reset emails
+- Email templates should be professional and branded
+- Include proper unsubscribe links and privacy notices
+
+### Rate Limiting
+Consider implementing rate limiting, especially for:
+- Authentication endpoints (prevent brute force attacks)
+- Password reset requests (prevent abuse)
+- News crawler endpoints
+
+### Security Headers
+- Implement CORS properly for frontend domain
+- Use secure JWT signing algorithms (RS256 recommended)
+- Implement request rate limiting and validation
+
+### Database Schema
+```sql
+-- User table updates
+ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user';
+ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT false;
+ALTER TABLE users ADD COLUMN created_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NOT NULL;
+
+-- Password reset tokens table
+CREATE TABLE password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  used BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Email verification tokens table
+CREATE TABLE email_verification_tokens (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  used BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Caching
+News data should be cached to reduce external API calls.
+
+### Error Handling
+All endpoints should return consistent error response format.
+
+### Logging
+Implement comprehensive logging for debugging and monitoring.
+
+### Data Validation
+Validate all incoming request data using a validation library like Joi or Zod.

@@ -16,6 +16,7 @@ export default function MyReportsPage() {
   const router = useRouter()
   const [userPurchases, setUserPurchases] = useState<any[]>([])
   const [subscriptionEndDate, setSubscriptionEndDate] = useState<string | null>(null)
+  const [purchasesLoading, setPurchasesLoading] = useState(true)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -24,17 +25,29 @@ export default function MyReportsPage() {
     }
 
     if (user) {
-      const purchases = getPurchasesByUser(user.id)
-      console.log("My Reports - User purchases:", purchases)
-      setUserPurchases(purchases)
+      const loadUserPurchases = async () => {
+        setPurchasesLoading(true)
+        try {
+          const purchases = await getPurchasesByUser(user.id)
+          console.log("My Reports - User purchases:", purchases)
+          setUserPurchases(purchases)
 
-      // Get subscription end date
-      const endDate = getSubscriptionEndDate(user.id)
-      setSubscriptionEndDate(endDate)
+          // Get subscription end date
+          const endDate = await getSubscriptionEndDate(user.id)
+          setSubscriptionEndDate(endDate)
+        } catch (error) {
+          console.error("Failed to load user purchases:", error)
+          setUserPurchases([])
+        } finally {
+          setPurchasesLoading(false)
+        }
+      }
+
+      loadUserPurchases()
     }
   }, [user, loading, router, getPurchasesByUser, getSubscriptionEndDate])
 
-  if (loading) {
+  if (loading || purchasesLoading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
   }
 
