@@ -380,6 +380,53 @@ JSON
   },
   "timestamp": "2024-01-01T00:00:00Z"
 }
+
+GET /news/{articleId}
+Get detailed information for a specific news article including metadata and view count.
+
+Response:
+
+JSON
+{
+  "success": true,
+  "data": {
+    "article": {
+      "id": "news_123",
+      "title": "Korean Tech Giants Report Strong Q4 Earnings",
+      "summary": "Major Korean technology companies show robust growth...",
+      "content": "Full article content here...",
+      "url": "https://example.com/news/123",
+      "publishedAt": "2024-01-01T00:00:00Z",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z",
+      "source": "Korea Economic Daily",
+      "author": "John Kim",
+      "companyId": "company_456",
+      "sentiment": "positive",
+      "category": "earnings",
+      "tags": ["technology", "earnings", "Q4", "Korean companies"],
+      "viewCount": 1245,
+      "imageUrl": "https://example.com/images/news_123.jpg",
+      "readTime": 3
+    }
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+
+POST /news/{articleId}/view
+Increment view count for a specific news article.
+
+Response:
+
+JSON
+{
+  "success": true,
+  "data": {
+    "viewCount": 1246,
+    "success": true
+  },
+  "timestamp": "2024-01-01T00:00:00Z"
+}
 Error Responses
 All endpoints may return error responses in this format:
 

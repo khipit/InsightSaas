@@ -1,5 +1,5 @@
 import { apiClient } from './api-client'
-import type { NewsArticle, NewsResponse, NewsSearchRequest } from './api-types'
+import type { NewsArticle, NewsResponse, NewsSearchRequest, NewsDetailResponse, ViewCountResponse } from './api-types'
 
 class NewsService {
   // Get latest news articles
@@ -109,6 +109,28 @@ class NewsService {
       return response
     } catch (error) {
       console.error('Failed to get crawl job status:', error)
+      throw error
+    }
+  }
+
+  // Get news article details by ID
+  async getNewsDetail(articleId: string): Promise<NewsArticle> {
+    try {
+      const response = await apiClient.get<NewsDetailResponse>(`/news/${articleId}`)
+      return response.article
+    } catch (error) {
+      console.error('Failed to get news detail:', error)
+      throw error
+    }
+  }
+
+  // Increment view count for a news article
+  async incrementViewCount(articleId: string): Promise<number> {
+    try {
+      const response = await apiClient.post<ViewCountResponse>(`/news/${articleId}/view`, {})
+      return response.viewCount
+    } catch (error) {
+      console.error('Failed to increment view count:', error)
       throw error
     }
   }

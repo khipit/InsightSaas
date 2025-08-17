@@ -87,12 +87,31 @@ export interface NewsArticle {
   source: string
   companyId?: string
   sentiment: 'positive' | 'negative' | 'neutral'
+  // Enhanced metadata for detailed view
+  category?: string
+  tags?: string[]
+  author?: string
+  content?: string
+  viewCount?: number
+  createdAt?: string
+  updatedAt?: string
+  imageUrl?: string
+  readTime?: number // estimated reading time in minutes
 }
 
 export interface NewsResponse {
   articles: NewsArticle[]
   total: number
   hasNextPage: boolean
+}
+
+export interface NewsDetailResponse {
+  article: NewsArticle
+}
+
+export interface ViewCountResponse {
+  viewCount: number
+  success: boolean
 }
 
 export interface NewsSearchRequest {
